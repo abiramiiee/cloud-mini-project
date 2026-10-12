@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - CloudVault</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234f46e5'><path d='M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'/></svg>">
+</head>
+<body>
+
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="nav-brand">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+            </svg>
+          </div>
+          <span>CloudVault</span>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="sidebar-nav-item active" data-filter="all">
+          <div class="nav-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>All Files</span>
+          </div>
+          <span class="badge-count" id="stat-total-files">0</span>
+        </a>
+
+        <a class="sidebar-nav-item" data-filter="starred">
+          <div class="nav-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span>Starred</span>
+          </div>
+          <span class="badge-count" id="stat-starred-files">0</span>
+        </a>
+
+        <a class="sidebar-nav-item" data-filter="shared">
+          <div class="nav-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>Shared Links</span>
+          </div>
+          <span class="badge-count" id="stat-shared-files">0</span>
+        </a>
+      </nav>
+
+      <!-- Storage Meter Card -->
+      <div class="storage-card">
+        <div class="storage-info-header">
+          <span>Storage Quota</span>
+          <span style="color: var(--primary);">2.0 GB Total</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="storage-progress-fill" class="progress-bar-fill" style="width: 5%;"></div>
+        </div>
+        <div id="storage-text" class="storage-detail-text">Calculating usage...</div>
+      </div>
+
+      <!-- User Profile Card -->
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="avatar" id="user-avatar">DV</div>
+          <div class="user-info">
+            <div class="user-name" id="user-display-name">Demo User</div>
+            <div class="user-email" id="user-display-email">demo@cloudstorage.io</div>
+          </div>
+        </div>
+        <button class="btn-icon" title="Logout" onclick="logout()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-main">
+      <!-- Topbar -->
+      <header class="dashboard-topbar">
+        <div class="search-box-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="dashboard-search" class="search-input" placeholder="Search files, documents, images...">
+        </div>
+
+        <div class="topbar-actions">
+          <div id="api-status-badge" class="api-badge sandbox" title="Backend Status">
+            <span class="dot"></span> Checking API...
+          </div>
+
+          <button id="theme-toggle-btn" class="theme-toggle" title="Toggle Dark/Light Mode">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+
+          <button class="btn btn-primary" onclick="openModal('upload-modal')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Upload Files</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <section class="dashboard-content">
+        <!-- Stats Summary Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background-color: var(--primary);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                <polyline points="13 2 13 9 20 9"></polyline>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <h4>Space Used</h4>
+              <div class="stat-number" id="stat-storage-used">0 B</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background-color: var(--secondary);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <h4>Capacity Plan</h4>
+              <div class="stat-number">2.0 GB Free</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background-color: var(--success);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <h4>Security</h4>
+              <div class="stat-number">JWT Active</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Toolbar -->
+        <div class="file-toolbar">
+          <div class="toolbar-left">
+            <h2 style="font-size: 1.3rem; font-weight: 700;">Files Explorer</h2>
+          </div>
+
+          <div class="toolbar-right">
+            <div class="view-toggle">
+              <button id="view-grid-btn" class="view-toggle-btn active" title="Grid View">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </button>
+              <button id="view-list-btn" class="view-toggle-btn" title="List View">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Files Display Container -->
+        <div id="files-container" class="file-grid"></div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <h3>No Files Found</h3>
+          <p>Get started by uploading your first document, image, or archive to CloudVault.</p>
+          <button class="btn btn-primary" onclick="openModal('upload-modal')">Upload Files Now</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Upload Modal -->
+  <div id="upload-modal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Upload Files</h3>
+        <button class="btn-icon" onclick="closeModal('upload-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="file" id="upload-input" multiple style="display: none;">
+        <div id="modal-dropzone" class="dropzone">
+          <div class="dropzone-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <h4>Click to browse or drag and drop files here</h4>
+          <p>Supports Images, Documents, Videos, Code, and Archives up to 50 MB each</p>
+        </div>
+
+        <div id="upload-queue-list" class="upload-queue"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('upload-modal')">Cancel</button>
+        <button id="confirm-upload-btn" class="btn btn-primary" disabled onclick="executeUpload()">Start Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share Link Modal -->
+  <div id="share-modal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Share File</h3>
+        <button class="btn-icon" onclick="closeModal('share-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Sharing: <strong id="share-file-name" style="color: var(--primary);">file.ext</strong></p>
+        <div id="share-status-indicator" style="font-size: 0.85rem; margin-top: 0.5rem;"></div>
+
+        <div class="share-link-box">
+          <input type="text" id="share-link-input" class="form-control" readonly>
+          <button class="btn btn-primary" onclick="copyShareLink()">Copy Link</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('share-modal')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Preview Modal -->
+  <div id="preview-modal" class="modal-backdrop">
+    <div class="modal-dialog preview-modal-dialog">
+      <div class="modal-header">
+        <h3 id="preview-modal-title">File Preview</h3>
+        <button class="btn-icon" onclick="closeModal('preview-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="preview-modal-body" class="preview-content"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="preview-download-btn" class="btn btn-primary">⬇️ Download File</button>
+        <button class="btn btn-secondary" onclick="closeModal('preview-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initDashboard();
+    });
+  </script>
+</body>
+</html>
